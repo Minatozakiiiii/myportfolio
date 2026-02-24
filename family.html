@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Family Background</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  :root {
+    --bg-color: #f7f1e1;        
+    --text-color: #5a5a3d;      
+    --highlight-color: #8b6b4a;
+    --block-bg: #e9e6d2;        
+    --border-color: #a7a36f;    
+    --shadow-color: #c7c3a0;
+    --accent-yellow: #e4b222;
+  }
+
+  body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--bg-color);
+    padding: 20px;
+    color: var(--text-color);
+    background-image: url("ghibli_sky.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 28px;
+    text-shadow: 2px 2px 0 var(--border-color);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  h1:hover {
+    color: var(--highlight-color);
+    text-shadow: 4px 4px 0 var(--accent-yellow);
+    transform: scale(1.05);
+  }
+
+  .main-container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    gap: 20px;
+  }
+
+  .photo-column {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .photo-box {
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 12px;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    backdrop-filter: blur(5px);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .photo-box:hover {
+    transform: translateX(10px) scale(1.05);
+  }
+
+  .photo-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 3px solid var(--border-color);
+    display: block;
+  }
+
+  .content-box {
+    flex: 1;
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    backdrop-filter: blur(5px);
+  }
+
+  h2 {
+    font-size: 14px;
+    color: var(--highlight-color);
+    text-decoration: underline;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    transition: all 0.3s steps(4);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  h2:first-of-type {
+    margin-top: 0;
+  }
+
+  h2:hover {
+    color: var(--accent-yellow);
+    transform: translateX(10px) scale(1.1);
+  }
+
+  h2:hover::before {
+    content: '▶ ';
+    color: var(--accent-yellow);
+    font-size: 12px;
+  }
+
+  p {
+    font-size: 10px;
+    line-height: 18px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  p:hover {
+    background: rgba(167, 163, 111, 0.1);
+    color: #000;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    gap: 10px;
+  }
+
+  .button-row a {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: var(--highlight-color);
+    border: 3px solid var(--highlight-color);
+    text-decoration: none;
+    padding: 12px 18px;
+    background-color: var(--block-bg);
+    border-radius: 10px;
+    transition: 0.3s steps(4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--highlight-color);
+  }
+
+  .button-row a:hover {
+    background-color: var(--highlight-color);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 #5a4a35;
+  }
+
+  .button-row a:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 var(--highlight-color);
+  }
+
+  .arrow-left, .arrow-right {
+    visibility: hidden;
+  }
+
+  .button-row a:hover .arrow-left, .button-row a:hover .arrow-right {
+    visibility: visible;
+    animation: blink 0.5s infinite;
+  }
+
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      flex-direction: column;
+    }
+
+    .photo-column {
+      flex: none;
+      width: 100%;
+    }
+
+    .photo-box {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .button-row {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>FAMILY</h1>
+
+<div class="main-container">
+  
+  <div class="photo-column">
+    <div class="photo-box">
+      <img src="family/f1.jpg" alt="Ate Picture" />
+    </div>
+    <div class="photo-box">
+      <img src="family/f2.jpg" alt="Mama Picture" />
+    </div>
+    <div class="photo-box">
+      <img src="family/f4.jpg" alt="Papa Picture" />
+    </div>
+  </div>
+
+  <div class="content-box">
+    
+    <h2>Ate</h2>
+    <p>
+      Ang ate ko ay mahilig manood ng K-drama at maglaro kasama ang aming aso. Madalas siyang nasa kwarto niya,
+      naka-headphones habang nanonood ng paborito niyang Korean series. Kapag may free time siya, nilalambing niya ang aso namin at nilalaro ito sa bakuran. Minsan,
+      sabay pa kaming nanonood ng mga K-drama lalo na 'pag may bagong labas na episode. Mabait ang ate ko at responsable rin siya sa mga gawaing bahay.
+      Siya rin ang laging nagbibigay ng advice sa akin pag may problema ako. Hindi siya selfish at laging willing to help. Kahit busy siya, lagi pa rin niyang
+      inuunawa ang situation ko. Ang ate ko ay sobrang close ko, parang best friend ko na rin siya.
+    </p>
+
+    <h2>Mama</h2>
+    <p>
+      Si mama naman ay mahilig manood ng action at horror movies. Kapag weekend, lagi siyang may naka-ready na pelikula. 
+      Hindi siya takot sa mga jumpscares kahit minsan ako mismo ang natatakot. Gusto niya yung mga movies na may suspense at may mga twist sa ending.
+      Si mama ang tipo ng tao na masipag at maalaga sa amin. Siya rin ang laging nag-aalala kung may sakit kami. Palagi niyang sinisiguro na kumain kami ng
+      maayos at nakakapag-pahinga. Si mama ay mabait pero strict din pagdating sa estudyo. Siya ang nagpupush sa amin na mag-focus sa pag-aaral.
+      Kahit pagod siya sa trabaho, pinapakita pa rin niya ang love and care niya para sa family.
+    </p>
+
+    <h2>Papa</h2>
+    <p>
+      Si papa ay isang simpleng tao pero very supportive at mapagmahal. Mahilig din siyang manood ng action movies lalo 
+      na yung may mga barilan at habulan. Si papa ay tahimik lang pero kapag nagsalita, siguradong may sense ang sinasabi niya.
+      Mahilig din siyang magkuwento tungkol sa trabaho niya sa truck. Siya ang tipo ng tatay na hindi masalita pero ipaparamdam sa gawa ang pagmamahal.
+      Lagi niyang sinisiguro na may lahat kami ng kailangan. Kahit pagod siya sa byahe, nagtatrabaho pa rin siya para sa amin. Si papa ay matatag at
+      maaasahan. Siya ang foundation ng pamilya namin.
+    </p>
+
+    <div class="button-row">
+      <a href="family_album.html">
+        <span class="arrow-left">▶</span> Family Picture <span class="arrow-right">◀</span>
+      </a>
+      <a href="menu.html">
+        <span class="arrow-left">▶</span> Back to Menu <span class="arrow-right">◀</span>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

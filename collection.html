@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Collection</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  :root {
+    --bg-color: #f7f1e1;
+    --text-color: #5a5a3d;
+    --highlight-color: #8b6b4a;
+    --block-bg: #e9e6d2;
+    --border-color: #a7a36f;
+    --shadow-color: #c7c3a0;
+    --accent-yellow: #e4b222;
+  }
+
+  body.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --highlight-color: #c0c0c0;
+    --block-bg: #2a2a2a;
+    --border-color: #666;
+    --shadow-color: #0a0a0a;
+    --accent-yellow: #ffeb3b;
+  }
+
+  body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--bg-color);
+    padding: 20px;
+    color: var(--text-color);
+    background-image: url("ghibli_sky.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative;
+    min-height: 100vh;
+    transition: all 0.8s ease;
+  }
+
+  /* Vignette Effect */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    box-shadow: inset 0 0 150px rgba(90, 74, 61, 0.4);
+    z-index: 1;
+  }
+
+  /* CRT Scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.03) 0px,
+      transparent 2px,
+      transparent 4px,
+      rgba(0, 0, 0, 0.03) 5px
+    );
+    z-index: 2;
+    opacity: 0.4;
+    animation: scanlines 8s linear infinite;
+  }
+
+  @keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(20px); }
+  }
+
+  /* Film Grain Texture */
+  .film-grain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: 2;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="300" height="300" filter="url(%23noise)" opacity="0.4"/></svg>');
+    animation: grain 0.5s steps(2) infinite;
+  }
+
+  @keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -5%); }
+    30% { transform: translate(3%, -8%); }
+    50% { transform: translate(12%, 9%); }
+    70% { transform: translate(9%, 4%); }
+    90% { transform: translate(-1%, 7%); }
+  }
+
+  /* Floating Clouds */
+  .cloud {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 100px;
+    opacity: 0.5;
+    z-index: 0;
+    animation: float-cloud linear infinite;
+  }
+
+  .cloud::before,
+  .cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 100px;
+  }
+
+  .cloud-1 {
+    width: 100px;
+    height: 40px;
+    top: 10%;
+    left: -100px;
+    animation-duration: 60s;
+  }
+
+  .cloud-1::before {
+    width: 50px;
+    height: 50px;
+    top: -20px;
+    left: 10px;
+  }
+
+  .cloud-1::after {
+    width: 60px;
+    height: 40px;
+    top: -10px;
+    right: 10px;
+  }
+
+  .cloud-2 {
+    width: 120px;
+    height: 50px;
+    top: 30%;
+    left: -120px;
+    animation-duration: 80s;
+    animation-delay: 15s;
+  }
+
+  .cloud-2::before {
+    width: 60px;
+    height: 60px;
+    top: -25px;
+    left: 15px;
+  }
+
+  .cloud-2::after {
+    width: 70px;
+    height: 50px;
+    top: -15px;
+    right: 15px;
+  }
+
+  @keyframes float-cloud {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 200px)); }
+  }
+
+  /* Floating Dust Particles */
+  .dust {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: rgba(228, 178, 34, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 3;
+    animation: float-dust ease-in-out infinite;
+  }
+
+  @keyframes float-dust {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% {
+      transform: translateY(-100vh) translateX(30px);
+      opacity: 0;
+    }
+  }
+
+  /* Soot Sprite Character */
+  .soot-sprite {
+    position: fixed;
+    width: 35px;
+    height: 35px;
+    background: radial-gradient(circle, #3a3a3a 50%, transparent 100%);
+    border-radius: 50%;
+    z-index: 100;
+    pointer-events: none;
+    animation: sprite-float 6s ease-in-out infinite;
+  }
+
+  .soot-sprite::before,
+  .soot-sprite::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    top: 12px;
+  }
+
+  .soot-sprite::before { left: 9px; }
+  .soot-sprite::after { right: 9px; }
+
+  @keyframes sprite-float {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(15px, -10px); }
+    50% { transform: translate(-8px, -18px); }
+    75% { transform: translate(12px, -8px); }
+  }
+
+  /* Drifting Leaf */
+  .leaf {
+    position: fixed;
+    font-size: 25px;
+    opacity: 0;
+    z-index: 3;
+    pointer-events: none;
+    animation: drift-leaf 25s linear infinite;
+  }
+
+  @keyframes drift-leaf {
+    0% {
+      top: -50px;
+      left: 15%;
+      opacity: 0;
+      transform: rotate(0deg);
+    }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.7; }
+    100% {
+      top: 100vh;
+      left: 35%;
+      opacity: 0;
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Controls */
+  .controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 12px;
+    z-index: 1000;
+  }
+
+  .control-btn {
+    width: 45px;
+    height: 45px;
+    border: 3px solid var(--border-color);
+    background: rgba(233, 230, 210, 0.95);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .control-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .control-btn:active {
+    transform: translateY(1px);
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 28px;
+    text-shadow: 2px 2px 0 var(--border-color);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+    z-index: 10;
+    animation: title-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes title-glow {
+    0%, 100% {
+      text-shadow: 2px 2px 0 var(--border-color);
+    }
+    50% {
+      text-shadow: 2px 2px 0 var(--border-color),
+                   0 0 15px rgba(228, 178, 34, 0.4);
+    }
+  }
+
+  h1:hover {
+    color: var(--highlight-color);
+    text-shadow: 4px 4px 0 var(--accent-yellow);
+    transform: scale(1.05);
+  }
+
+  .collection-box {
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 25px;
+    width: 80%;
+    max-width: 900px;
+    margin: auto;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    position: relative;
+    backdrop-filter: blur(5px);
+    z-index: 10;
+  }
+
+  /* Glowing Border Effect */
+  .collection-box::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(45deg, 
+      rgba(228, 178, 34, 0.3),
+      rgba(167, 163, 111, 0.3),
+      rgba(228, 178, 34, 0.3)
+    );
+    border-radius: 15px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    animation: border-glow 4s ease-in-out infinite;
+  }
+
+  .collection-box:hover::before {
+    opacity: 1;
+  }
+
+  @keyframes border-glow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Currently Into Section */
+  .currently-into {
+    background: rgba(228, 178, 34, 0.12);
+    border: 2px dashed var(--accent-yellow);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 9px;
+    line-height: 16px;
+  }
+
+  .currently-into-title {
+    color: var(--accent-yellow);
+    margin-bottom: 8px;
+    font-size: 10px;
+  }
+
+  p {
+    font-size: 10px;
+    line-height: 18px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  /* Typing cursor effect */
+  .typing::after {
+    content: '▌';
+    animation: blink-cursor 0.8s infinite;
+  }
+
+  @keyframes blink-cursor {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  p:hover {
+    background: rgba(167, 163, 111, 0.1);
+    color: #000;
+  }
+
+  ol, dl {
+    margin-left: 25px;
+    font-size: 10px;
+  }
+
+  dt {
+    margin-top: 25px;
+    font-size: 14px;
+    color: var(--highlight-color);
+    text-decoration: underline;
+    transition: all 0.3s steps(4);
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Hover glow for category titles */
+  dt:hover {
+    color: var(--accent-yellow);
+    text-shadow: 0 0 10px rgba(228, 178, 34, 0.5);
+    transform: translateX(8px);
+  }
+
+  dd {
+    margin-left: 20px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  li, dt, dd {
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    display: block;
+    width: fit-content;
+  }
+
+  li:hover, dd:hover {
+    transform: translateX(10px) scale(1.1);
+    color: var(--accent-yellow);
+    text-shadow: 1px 1px 0px var(--accent-yellow);
+  }
+
+  li:hover::before, dd:hover::before {
+    content: '▶ ';
+    color: var(--accent-yellow);
+    font-size: 8px;
+  }
+
+  /* Bounce animation on click */
+  .bounce {
+    animation: item-bounce 0.4s ease;
+  }
+
+  @keyframes item-bounce {
+    0%, 100% { transform: translateX(10px) scale(1.1); }
+    50% { transform: translateX(10px) scale(1.2); }
+  }
+
+  /* Favorite star */
+  .favorited::after {
+    content: ' ⭐';
+    font-size: 10px;
+    animation: star-twinkle 1s ease-in-out infinite;
+  }
+
+  @keyframes star-twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    gap: 10px;
+  }
+
+  .button-row a {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: var(--highlight-color);
+    border: 3px solid var(--highlight-color);
+    text-decoration: none;
+    padding: 12px 18px;
+    background-color: var(--block-bg);
+    border-radius: 10px;
+    transition: 0.3s steps(4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--highlight-color);
+    position: relative;
+  }
+
+  .button-row a:hover {
+    background-color: var(--highlight-color);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 #5a4a35;
+  }
+
+  .button-row a:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 var(--highlight-color);
+  }
+
+  .arrow-left, .arrow-right {
+    visibility: hidden;
+  }
+
+  .button-row a:hover .arrow-left, .button-row a:hover .arrow-right {
+    visibility: visible;
+    animation: blink 0.5s infinite;
+  }
+
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Saved Indicator */
+  .saved-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(233, 230, 210, 0.95);
+    border: 2px solid var(--border-color);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .saved-indicator.show {
+    opacity: 1;
+    animation: save-pulse 1.5s ease-in-out;
+  }
+
+  @keyframes save-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .saved-indicator::before {
+    content: '💾 ';
+  }
+
+  @media (max-width: 768px) {
+    .controls {
+      top: 10px;
+      right: 10px;
+      gap: 8px;
+    }
+
+    .control-btn {
+      width: 38px;
+      height: 38px;
+      font-size: 16px;
+    }
+
+    .collection-box {
+      width: 95%;
+      padding: 20px;
+    }
+  }
+</style>
+
+</head>
+
+<body>
+
+<!-- Film Grain -->
+<div class="film-grain"></div>
+
+<!-- Floating Clouds -->
+<div class="cloud cloud-1"></

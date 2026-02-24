@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Education Album</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #f7f1e1;
+            --primary-color: #6d7f33;
+            --accent-red: #8b2d2d;
+            --accent-orange: #cc5500;
+            --accent-yellow: #e4b222;
+            --highlight-color: #8b6b4a;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            background-image: url("ghibli_sky.jpg"); 
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* --- THE MENU-STYLE HEADER HOVER --- */
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0 var(--accent-orange);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        h1:hover {
+            color: var(--accent-yellow);
+            text-shadow: 4px 4px 0 var(--accent-red);
+            transform: scale(1.05) rotate(-1deg);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: auto;
+            z-index: 5;
+        }
+
+        /* Card container for flip effect */
+        .card {
+            perspective: 1000px; 
+            width: 100%;
+            height: 320px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .front {
+            background-color: #faf7eb;
+            border: 5px solid #9db469;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 7px;
+            image-rendering: pixelated; 
+        }
+
+        .front:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--accent-yellow);
+            animation: levitate 1s ease-in-out infinite;
+            border-color: var(--accent-yellow);
+        }
+
+        @keyframes levitate {
+            0%, 100% { transform: translateY(-15px) scale(1.05); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background-color: #f1e7c6;
+            border: 5px solid #a0a067;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #2d2d2d;
+            font-size: 14px;
+            line-height: 1.4;
+            text-shadow: 1px 1px 0 var(--accent-orange);
+        }
+
+        /* --- SLIM COLLECTION-STYLE BUTTON --- */
+        .button-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .button-row a {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            color: var(--highlight-color);
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid var(--highlight-color);
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            transition: 0.2s steps(4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 3px 3px 0 var(--highlight-color);
+        }
+
+        .button-row a:hover {
+            background-color: var(--highlight-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 5px 5px 0 #5a4a35;
+        }
+
+        .button-row a:active {
+            transform: translate(1px, 1px);
+            box-shadow: 0 0 0 var(--highlight-color);
+        }
+
+        .arrow-left {
+            visibility: hidden;
+            font-size: 8px;
+        }
+
+        .button-row a:hover .arrow-left {
+            visibility: visible;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Education Album</h1>
+
+    <div class="gallery">
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee1.jpg" alt="ee1"></div>
+                <div class="back"><p>First day memories - nervous but excited for the journey ahead.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee2.jpg" alt="ee2"></div>
+                <div class="back"><p>School activities and bonding moments with classmates.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee3.jpg" alt="ee3"></div>
+                <div class="back"><p>Making memories during class hours and group work sessions.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee4.jpg" alt="ee4"></div>
+                <div class="back"><p>School events that brought everyone together.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee5.jpg" alt="ee5"></div>
+                <div class="back"><p>Classroom moments - where learning meets friendship.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee6.jpg" alt="ee6"></div>
+                <div class="back"><p>Grade 9 adventures - growing up and finding my voice.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee7.jpg" alt="ee7"></div>
+                <div class="back"><p>Grade 8 beginnings - fresh start in a new environment.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee8.jpg" alt="ee8"></div>
+                <div class="back"><p>School gatherings and special occasions with friends.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee9.jpg" alt="ee9"></div>
+                <div class="back"><p>Fun times during breaks and after-school hangouts.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee10.jpg" alt="ee10"></div>
+                <div class="back"><p>Academic achievements and proud moments in school.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee11.jpg" alt="ee11"></div>
+                <div class="back"><p>Field trips and educational experiences outside the classroom.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee12.jpg" alt="ee12"></div>
+                <div class="back"><p>Project presentations and collaborative learning moments.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee13.jpg" alt="ee13"></div>
+                <div class="back"><p>School performances and creative showcases with friends.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee14.jpg" alt="ee14"></div>
+                <div class="back"><p>Grade 10 milestone - final year of junior high journey.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="education/ee15.jpg" alt="ee15"></div>
+                <div class="back"><p>Graduation preparations and bittersweet goodbyes.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-row">
+        <a href="education.html"><span class="arrow-left">▶</span> GO BACK</a>
+    </div>
+
+    <script>
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+    </script>
+
+</body>
+</html>

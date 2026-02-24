@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>King Antiado - Personal Page</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  :root {
+    --bg-color: #f7f1e1;        
+    --text-color: #5a5a3d;      
+    --highlight-color: #8b6b4a;
+    --block-bg: #e9e6d2;        
+    --border-color: #a7a36f;    
+    --shadow-color: #c7c3a0;
+    --accent-yellow: #e4b222;
+  }
+
+  body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--bg-color);
+    padding: 20px;
+    color: var(--text-color);
+    background-image: url("ghibli_sky.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 28px;
+    text-shadow: 2px 2px 0 var(--border-color);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  h1:hover {
+    color: var(--highlight-color);
+    text-shadow: 4px 4px 0 var(--accent-yellow);
+    transform: scale(1.05);
+  }
+
+  .main-container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    gap: 20px;
+  }
+
+  .photo-column {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .photo-box {
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 12px;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    backdrop-filter: blur(5px);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .photo-box:hover {
+    transform: translateX(10px) scale(1.05);
+  }
+
+  .photo-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 3px solid var(--border-color);
+    display: block;
+  }
+
+  .content-box {
+    flex: 1;
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    backdrop-filter: blur(5px);
+  }
+
+  h2 {
+    font-size: 14px;
+    color: var(--highlight-color);
+    text-decoration: underline;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    transition: all 0.3s steps(4);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  h2:first-of-type {
+    margin-top: 0;
+  }
+
+  h2:hover {
+    color: var(--accent-yellow);
+    transform: translateX(10px) scale(1.1);
+  }
+
+  h2:hover::before {
+    content: '▶ ';
+    color: var(--accent-yellow);
+    font-size: 12px;
+  }
+
+  p {
+    font-size: 10px;
+    line-height: 18px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  p:hover {
+    background: rgba(167, 163, 111, 0.1);
+    color: #000;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    gap: 10px;
+  }
+
+  .button-row a {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: var(--highlight-color);
+    border: 3px solid var(--highlight-color);
+    text-decoration: none;
+    padding: 12px 18px;
+    background-color: var(--block-bg);
+    border-radius: 10px;
+    transition: 0.3s steps(4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--highlight-color);
+  }
+
+  .button-row a:hover {
+    background-color: var(--highlight-color);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 #5a4a35;
+  }
+
+  .button-row a:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 var(--highlight-color);
+  }
+
+  .arrow-left, .arrow-right {
+    visibility: hidden;
+  }
+
+  .button-row a:hover .arrow-left, .button-row a:hover .arrow-right {
+    visibility: visible;
+    animation: blink 0.5s infinite;
+  }
+
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      flex-direction: column;
+    }
+
+    .photo-column {
+      flex: none;
+      width: 100%;
+    }
+
+    .photo-box {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .button-row {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>PERSONAL</h1>
+
+<div class="main-container">
+  
+  <div class="photo-column">
+    <div class="photo-box">
+      <img src="family/ff17.jpg" alt="Picture 1" />
+    </div>
+    <div class="photo-box">
+      <img src="family/ff18.jpg" alt="Picture 2" />
+    </div>
+    <div class="photo-box">
+      <img src="family/ff19.jpg" alt="Picture 3" />
+    </div>
+  </div>
+
+  <div class="content-box">
+    
+    <h2>About Me</h2>
+    <p>
+      Hi, ako nga pala si King Edward Antiado, isa akong simpleng tao na maraming hilig sa buhay. Isa sa pinaka-favorite kong gawin ay ang pagdadrawing.
+      Bata pa lang ako, mahilig na talaga akong mag-sketch kahit sa likod lang ng notebook. Ginagawa kong way ang pag-drawing para ma-express ang sarili ko at ma-relax. Madalas akong gumuguhit ng anime,
+      characters, at minsan mga scenes na naiisip ko lang bigla. Sa tuwing may stress o problema, lapis at papel agad ang hanap ko. Nag-aaral din ako kung paano pa mapapaganda ang mga gawa ko, minsan
+      nanonood ako ng tutorials online. Kahit digital art, sinusubukan ko rin para ma-improve ang skills ko. Sobrang saya kapag may nakaka-appreciate ng gawa ko. Drawing is more than just a hobby for me, parang part na siya ng identity ko.
+    </p>
+
+    <h2>Gaming Life</h2>
+    <p>
+      Bukod sa drawing, hilig ko rin ang maglaro ng online games. Minsan mobile games, minsan sa PC, depende sa mood ko. Mahilig ako sa mga adventure games, RPGs, at minsan competitive games tulad ng ML o Valorant.
+      Masarap sa feeling 'yung thrill ng laro lalo na kung panalo. Minsan, nakikilala ko rin ang bagong friends sa mga laro na 'to. Kahit nasa bahay lang ako, parang nakakalabas na rin ako ng mundo dahil sa gaming.
+      Pero syempre, marunong din akong mag-balance sa oras. Hindi ako palaging nakatutok, lalo na pag may school work. Para sa akin, gaming is not just a pastime—it's also a way to connect with people. At syempre,
+      hindi mawawala ang bonding namin ng tropa habang naglalaro.
+    </p>
+
+    <h2>Lifestyle & Balance</h2>
+    <p>
+      Hindi lang ako mahilig sa indoor activities, gusto ko rin talaga ang paglabas-labas o pag-gala sa labas. Kapag weekend o may free time, nilalakad ko lang minsan ang paligid para mag-unwind.
+      Gusto ko 'yung feeling ng hangin, at 'yung tahimik na moments habang naglalakad. Minsan din, namamasyal ako kasama ang mga kaibigan o pamilya. Mahilig akong tumambay sa park, o kahit sa tindahan
+      lang malapit. Kahit simpleng gala lang, masaya na ako basta nasa labas. Mas lalo kong na-appreciate ang nature at peace of mind kapag nasa labas ako. Parang nare-refresh ang utak ko at nakakakuha
+      ako ng bagong inspiration para sa drawing. Hindi lang ito physical activity, kundi mental break din. Kaya balance lang, may time sa drawing, gaming, at gala.
+    </p>
+
+    <div class="button-row">
+      <a href="personal_album.html">
+        <span class="arrow-left">▶</span> Personal Picture <span class="arrow-right">◀</span>
+      </a>
+      <a href="menu.html">
+        <span class="arrow-left">▶</span> Back to Menu <span class="arrow-right">◀</span>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

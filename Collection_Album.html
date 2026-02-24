@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Collection Album</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #f7f1e1;
+            --primary-color: #6d7f33;
+            --accent-red: #8b2d2d;
+            --accent-orange: #cc5500;
+            --accent-yellow: #e4b222;
+            --highlight-color: #8b6b4a;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            background-image: url("ghibli_sky.jpg"); 
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* --- THE MENU-STYLE HEADER HOVER --- */
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0 var(--accent-orange);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        h1:hover {
+            color: var(--accent-yellow);
+            text-shadow: 4px 4px 0 var(--accent-red);
+            transform: scale(1.05) rotate(-1deg);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: auto;
+            z-index: 5;
+        }
+
+        /* Card container for flip effect */
+        .card {
+            perspective: 1000px; 
+            width: 100%;
+            height: 320px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .front {
+            background-color: #faf7eb;
+            border: 5px solid #9db469;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 7px;
+            image-rendering: pixelated; 
+        }
+
+        .front:hover {
+            transform: translateY(-15px) scale(1.05);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25), 0 0 15px var(--accent-yellow);
+            animation: levitate 1s ease-in-out infinite;
+            border-color: var(--accent-yellow);
+        }
+
+        @keyframes levitate {
+            0%, 100% { transform: translateY(-15px) scale(1.05); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            background-color: #f1e7c6;
+            border: 5px solid #a0a067;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #2d2d2d;
+            font-size: 14px;
+            line-height: 1.4;
+            text-shadow: 1px 1px 0 var(--accent-orange);
+        }
+
+        /* --- SLIM COLLECTION-STYLE BUTTON --- */
+        .button-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .button-row a {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            color: var(--highlight-color);
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid var(--highlight-color);
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            transition: 0.2s steps(4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 3px 3px 0 var(--highlight-color);
+        }
+
+        .button-row a:hover {
+            background-color: var(--highlight-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 5px 5px 0 #5a4a35;
+        }
+
+        .button-row a:active {
+            transform: translate(1px, 1px);
+            box-shadow: 0 0 0 var(--highlight-color);
+        }
+
+        .arrow-left {
+            visibility: hidden;
+            font-size: 8px;
+        }
+
+        .button-row a:hover .arrow-left {
+            visibility: visible;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Collection Album</h1>
+
+    <div class="gallery">
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/c2.jpg" alt="c2"></div>
+                <div class="back"><p>Totoro is the titular, giant, furry forest spirit from Studio Ghibli’s My Neighbor Totoro (1988).</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/c3.jpg" alt="c3"></div>
+                <div class="back"><p>Chihiro wanders into a magical realm and must work in a spirit bathhouse to save her parents.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/c4.jpg" alt="c4"></div>
+                <div class="back"><p>Howl's moving castle is a whimsical, chaotic fortress that moves on mechanical chicken legs.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/c5.jpg" alt="c5"></div>
+                <div class="back"><p>Kiki moves to a new town to start a flying courier service.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/c6.jpg" alt="c6"></div>
+                <div class="back"><p>Ponyo is a magical, goldfish-turned-human girl with high energy and a deep love for Sōsuke.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/c8.jpg" alt="c8"></div>
+                <div class="back"><p>Arrietty is a courageous 14-year-old "Borrower" living hidden beneath a human house.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/boxer.jpg" alt="cc3"></div>
+                <div class="back"><p>The Boxer: A psychological drama about an apathetic prodigy molded into a fighting machine.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/leviathan.jpg" alt="cc4"></div>
+                <div class="back"><p>Leviathan: Humanity lives on ships and is hunted by mutated sea monsters.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/lag.jpg" alt="cc5"></div>
+                <div class="back"><p>L.A.G: A man trapped in a recurring "game" within a deadly underground labyrinth.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/northern.jpg" alt="cc6"></div>
+                <div class="back"><p>Jin Mu-Won masters a forgotten martial art to avenge his father.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/superhuman.jpg" alt="cc7"></div>
+                <div class="back"><p>Powerful Superhumans defend humanity against intelligent monsters.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/greatest.png" alt="cc8"></div>
+                <div class="back"><p>Lloyd Frontera saves his family from debt using civil engineering knowledge.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/ccc1.jpg" alt="ccc1"></div>
+                <div class="back"><p>Learning perspective drawing.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/ccc4.jpg" alt="ccc4"></div>
+                <div class="back"><p>Missing requirement for English class 2022.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/ccc6.jpg" alt="ccc6"></div>
+                <div class="back"><p>Drawing out of boredom on vacation.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/ccc7.jpg" alt="ccc7"></div>
+                <div class="back"><p>Teacher was absent, boredom struck again.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/ccc8.jpg" alt="ccc8"></div>
+                <div class="back"><p>My first time using the grid method.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/ml.jpg" alt="ml"></div>
+                <div class="back"><p>99/100?? This one really pissed me off. Almost Immortal!</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/wild rift.jpg" alt="wild rift"></div>
+                <div class="back"><p>My favorite badass champion in League of Legends.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/highclass.jpg" alt="New Item"></div>
+                <div class="back"><p>High Class is a dark, psychological high school drama centered on the intense hierarchy, bullying, and power struggles within an elite academic environment.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/zomgan.jpg" alt="New Item"></div>
+                <div class="back"><p>Zomgan is a post-apocalyptic action manhwa set in a world ruled by "Zomgans"—sentient, superpowered human-zombie hybrids.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/fight.jpg" alt="New Item"></div>
+                <div class="back"><p>Viral Hit follows Hobin Yoo, a scrawny high schooler who starts a NewTube channel to document himself fighting much stronger opponents using tips from a mysterious, chicken-masked instructor.</p></div>
+            </div>
+        </div>
+
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/peter.jpg" alt="New Item"></div>
+                <div class="back"><p>Killer Peter follows a legendary, elderly assassin who is betrayed by his organization and miraculously reverts to his 19-year-old physical prime.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/laufey.jpg" alt="New Item"></div>
+                <div class="back"><p>Jazzzzz musiccc</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/tvgirl.jpg" alt="New Item"></div>
+                <div class="back"><p>TV Girl’s music is really good and underrated, especially The Blonde.</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/twice.jpg" alt="New Item"></div>
+                <div class="back"><p>Once, Twice, Sorry na bading lang</p></div>
+            </div>
+        </div>
+        <div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/bruno.jpg" alt="New Item"></div>
+               <div class="back"><p>I like bruno mars music especially the somewhere in  brooklyn.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/black.jpg" alt="New Item"></div>
+               <div class="back"><p>The Black Skirts makes catchy and emotional indie rock music, especially songs like Everything.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/newjeans.jpg" alt="New Item"></div>
+               <div class="back"><p>NewJeans is cool they do hiphop eventhough theyre kpop</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/matt.jpg" alt="New Item"></div>
+               <div class="back"><p>Matt Maltese makes emotional and melodic indie pop music, especially songs like As the World Caves In.</p></div>
+			</div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/liana.jpg" alt="New Item"></div>
+               <div class="back"><p>Liana Flores is a British‑Brazilian singer‑songwriter who blends folk, bossa nova, and indie pop into soft, melodic music.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/daniel.jpg" alt="New Item"></div>
+               <div class="back"><p>Daniel Caesar makes smooth and soulful R&B music with heartfelt lyrics and a rich, emotional voice.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/mac.jpg" alt="New Item"></div>
+               <div class="back"><p>Mac DeMarco makes laid-back indie rock music with a quirky, relaxed style.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/joji.jpg" alt="New Item"></div>
+               <div class="back"><p>Joji makes moody and melodic alternative R&B music with introspective lyrics.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/chris.jpg" alt="New Item"></div>
+               <div class="back"><p>Chris Brown makes energetic R&B and pop music with strong vocals and danceable beats.</p></div>
+            </div>
+        </div>
+		<div class="card" onclick="flipCard(this)">
+            <div class="card-inner">
+                <div class="front"><img src="collection/clairo.jpg" alt="New Item"></div>
+               <div class="back"><p>Clairo makes soft, dreamy indie pop music with personal and relatable lyrics.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-row">
+        <a href="collection.html"><span class="arrow-left">▶</span> GO BACK</a>
+    </div>
+
+    <script>
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+    </script>
+
+</body>
+</html>
