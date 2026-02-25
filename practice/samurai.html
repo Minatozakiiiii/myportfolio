@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Samurai Animation</title>
+
+<style>
+  body {
+    background: #f8f5e1;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  canvas {
+    background: #d4c99f;
+    border: 4px solid #a18f5f;
+    image-rendering: pixelated;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="game" width="600" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
+
+const sprite = new Image();
+sprite.src = "Portfolio Website\samurai.png";   // <-- YOUR FILE
+
+// FRAME SETTINGS
+const FRAME_WIDTH = 150;
+const FRAME_HEIGHT = 150;
+
+const ROW_IDLE = 0;   // top row
+const ROW_WALK = 1;   // bottom row
+const ROW_ATTACK = 1; // also bottom row
+
+const FRAMES_IDLE = 8;
+const FRAMES_WALK = 8;
+const FRAMES_ATTACK = 4; // use first 4 frames of bottom row
+
+// PLAYER STATE
+let x = 300;
+let y = 250;
+let frame = 0;
+let direction = 1; // 1 = right, -1 = left
+let frameTimer = 0;
+
+let moving = false;
+let attacking = false;
+let currentRow = ROW_IDLE;
+
+const keys = {};
+
+document.addEventListener("keydown", e => {
+  keys[e.key] = true;
+
+  if (e.key === " ") {
+    attacking = true;
+    frame = 0;
+  }
+});
+
+document.addEventListener("keyup", e => {
+  keys[e.key] = false;
+});
+
+// GAME LOOP
+function update() {
+
+  // Movement logic
+  moving = false;
+
+  if (keys["ArrowRight"] || keys["d"]) {
+    x += 2.5;
+    direction = 1;
+    moving = true;
+  }
+  if (keys["ArrowLeft"] || keys["a"]) {
+    x -= 2.5;
+    direction = -1;
+    moving = true;
+  }
+
+  // Animation logic
+  if (attacking) {
+    currentRow = ROW_ATTACK;
+
+    if (frame >= FRAMES_ATTACK - 1) {
+      attacking = false;
+      frame = 0;
+    }
+  } else if (moving) {
+    currentRow = ROW_WALK;
+  } else {
+    currentRow = ROW_IDLE;
+  }
+
+  frameTimer++;
+
+  if (frameTimer > 8) {
+    frame++;
+    frameTimer = 0;
+  }
+
+  if (!attacking) {
+    if (currentRow === ROW_IDLE && frame >= FRAMES_IDLE) frame = 0;
+    if (currentRow === ROW_WALK && frame >= FRAMES_WALK) frame = 0;
+  }
+
+  draw();
+  requestAnimationFrame(update);
+}
+
+// DRAW FUNCTION
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Flip horizontally if moving left
+  if (direction === -1) {
+    ctx.scale(-1, 1);
+  }
+
+  ctx.drawImage(
+    sprite,
+    frame * FRAME_WIDTH,
+    currentRow * FRAME_HEIGHT,
+    FRAME_WIDTH,
+    FRAME_HEIGHT,
+    -FRAME_WIDTH / 2,
+    -FRAME_HEIGHT / 2,
+    FRAME_WIDTH,
+    FRAME_HEIGHT
+  );
+
+  ctx.restore();
+}
+
+sprite.onload = () => {
+  update();
+};
+</script>
+
+</body>
+</html>
