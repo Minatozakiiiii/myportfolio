@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYSTEM.TERMINAL.1997</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-dark: #1a1510;
+      --bg-medium: #2a2218;
+      --text-primary: #d4c5a9;
+      --text-dark: #8b7355;
+      --accent-red: #8b4545;
+      --accent-brown: #5c4033;
+      --border-color: #6b5d4f;
+      --glow: 0 0 8px rgba(212, 197, 169, 0.6);
+    }
+
+    body {
+      font-family: 'VT323', monospace;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      overflow: hidden;
+      position: relative;
+      height: 100vh;
+      cursor: default;
+    }
+
+    /* CRT Scanlines */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(212, 197, 169, 0.05) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.3) 3px
+      );
+      pointer-events: none;
+      z-index: 1000;
+      animation: scanline 10s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100vh); }
+    }
+
+    /* CRT Flicker */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(212, 197, 169, 0.02);
+      pointer-events: none;
+      z-index: 999;
+      animation: flicker 0.18s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.27; }
+      5% { opacity: 0.34; }
+      10% { opacity: 0.23; }
+      15% { opacity: 0.90; }
+      20% { opacity: 0.18; }
+      25% { opacity: 0.83; }
+      30% { opacity: 0.65; }
+      35% { opacity: 0.67; }
+      40% { opacity: 0.26; }
+      45% { opacity: 0.84; }
+      50% { opacity: 0.96; }
+      55% { opacity: 0.08; }
+      60% { opacity: 0.20; }
+      65% { opacity: 0.71; }
+      70% { opacity: 0.53; }
+      75% { opacity: 0.37; }
+      80% { opacity: 0.71; }
+      85% { opacity: 0.70; }
+      90% { opacity: 0.70; }
+      95% { opacity: 0.36; }
+      100% { opacity: 0.24; }
+    }
+
+    /* Vignette */
+    body {
+      box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
+    }
+
+    .boot-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      font-size: 20px;
+      padding: 40px;
+    }
+
+    .boot-line {
+      opacity: 0;
+      animation: bootText 0.6s forwards;
+      margin: 8px 0;
+      text-shadow: 0 0 5px rgba(212, 197, 169, 0.5);
+    }
+
+    .boot-line.error {
+      color: var(--accent-red);
+      animation: bootGlitch 0.3s infinite;
+    }
+
+    @keyframes bootText {
+      to { opacity: 1; }
+    }
+
+    @keyframes bootGlitch {
+      0% { transform: translate(0); opacity: 1; }
+      33% { transform: translate(-2px, 1px); opacity: 0.8; }
+      66% { transform: translate(2px, -1px); opacity: 0.9; }
+      100% { transform: translate(0); opacity: 1; }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 12px;
+      height: 22px;
+      background: var(--text-primary);
+      animation: blink 1.2s infinite;
+      box-shadow: var(--glow);
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .desktop {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      padding: 20px;
+      background: var(--bg-dark);
+    }
+
+    .desktop.active {
+      display: block;
+      animation: desktopFadeIn 2s ease-out;
+    }
+
+    @keyframes desktopFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Floating whisper text */
+    .whisper {
+      position: fixed;
+      font-size: 14px;
+      color: var(--accent-red);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 800;
+      text-shadow: 0 0 10px var(--accent-red);
+      animation: whisperFloat 8s ease-in-out;
+    }
+
+    @keyframes whisperFloat {
+      0% { opacity: 0; transform: translateY(100vh); }
+      20% { opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { opacity: 0; transform: translateY(-100px); }
+    }
+
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: rgba(26, 21, 16, 0.95);
+      border-top: 3px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      z-index: 900;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .taskbar-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--text-primary);
+      text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .time {
+      margin-left: auto;
+      font-size: 18px;
+      padding: 5px 15px;
+      border: 2px solid var(--border-color);
+      background: rgba(42, 34, 24, 0.8);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .icon {
+      width: 90px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 15px;
+      transition: all 0.3s;
+      position: absolute;
+      filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.8));
+    }
+
+    .icon:hover {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 15px rgba(212, 197, 169, 0.6));
+    }
+
+    .icon-img {
+      font-size: 45px;
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .icon-label {
+      font-size: 15px;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+      background: rgba(26, 21, 16, 0.7);
+      padding: 3px 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .window {
+      position: absolute;
+      background: rgba(42, 34, 24, 0.98);
+      border: 4px solid var(--border-color);
+      box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 0, 0, 0.3);
+      min-width: 450px;
+      min-height: 320px;
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .window.active {
+      display: flex;
+      z-index: 500;
+      animation: windowOpen 0.4s ease-out;
+    }
+
+    @keyframes windowOpen {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .window-title {
+      background: var(--accent-brown);
+      color: var(--text-primary);
+      padding: 12px;
+      font-size: 19px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      cursor: move;
+      user-select: none;
+      border-bottom: 2px solid var(--border-color);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .window-close {
+      cursor: pointer;
+      font-weight: bold;
+      padding: 0 12px;
+      background: var(--accent-red);
+      border: 2px solid var(--text-dark);
+      transition: all 0.2s;
+    }
+
+    .window-close:hover {
+      background: #a85555;
+      transform: scale(1.1);
+    }
+
+    .window-content {
+      padding: 25px;
+      flex: 1;
+      overflow: auto;
+      font-size: 17px;
+      line-height: 1.8;
+      background: rgba(26, 21, 16, 0.6);
+    }
+
+    .notepad-input {
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 21, 16, 0.8);
+      border: 2px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: 'VT323', monospace;
+      font-size: 19px;
+      outline: none;
+      resize: none;
+      padding: 15px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .file-item {
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      margin: 8px 0;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: rgba(26, 21, 16, 0.5);
+      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .file-item:hover {
+      background: rgba(92, 64, 51, 0.3);
+      box-shadow: 0 0 15px rgba(212, 197, 169, 0.4);
+      transform: translateX(5px);
+    }
+
+    .file-item.corrupted {
+      animation: fileGlitch 1s infinite;
+      color: var(--accent-red);
+    }
+
+    @keyframes fileGlitch {
+      0%, 100% { transform: translate(0); }
+      25% { transform: translate(-2px, 2px); }
+      50% { transform: translate(2px, -2px); }
+      75% { transform: translate(-1px, 1px); }
+    }
+
+    .log-line {
+      margin: 5px 0;
+      font-size: 15px;
+      opacity: 0;
+      animation: logAppear 0.8s forwards;
+    }
+
+    @keyframes logAppear {
+      to { opacity: 1; }
+    }
+
+    .log-line.warning {
+      color: #d4a76a;
+    }
+
+    .log-line.error {
+      color: var(--accent-red);
+      text-shadow: 0 0 8px var(--accent-red);
+    }
+
+    .log-line.reversed {
+      direction: rtl;
+      unicode-bidi: bidi-override;
+    }
+
+    .glitch-text {
+      animation: textGlitch 0.2s infinite;
+    }
+
+    @keyframes textGlitch {
+      0% { transform: translate(0); }
+      33% { transform: translate(-2px, 2px); color: var(--accent-red); }
+      66% { transform: translate(2px, -2px); color: var(--text-dark); }
+      100% { transform: translate(0); }
+    }
+
+    .hidden-pixel {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: transparent;
+      cursor: crosshair;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+
+    .hidden-pixel:hover {
+      background: rgba(139, 69, 69, 0.5);
+      box-shadow: 0 0 10px var(--accent-red);
+    }
+
+    .flash-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 21, 16, 0.98);
+      border: 4px solid var(--accent-red);
+      padding: 40px;
+      font-size: 26px;
+      text-align: center;
+      z-index: 1500;
+      display: none;
+      box-shadow: 0 0 60px rgba(139, 69, 69, 0.8), inset 0 0 30px rgba(0, 0, 0, 0.6);
+      max-width: 600px;
+    }
+
+    .flash-message.show {
+      display: block;
+      animation: flashPulse 0.8s ease-in-out;
+    }
+
+    @keyframes flashPulse {
+      0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    .terminal-input {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      outline: none;
+      width: 100%;
+      padding: 5px;
+    }
+
+    .terminal-line {
+      margin: 3px 0;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .game-btn {
+      padding: 18px;
+      background: rgba(92, 64, 51, 0.6);
+      border: 3px solid var(--border-color);
+      color: var(--text-primary);
+      font-family: 'VT323', monospace;
+      font-size: 21px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .game-btn:hover:not(:disabled) {
+      background: rgba(92, 64, 51, 0.8);
+      box-shadow: 0 0 20px rgba(212, 197, 169, 0.5);
+      transform: translateY(-3px);
+    }
+
+    .game-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    .chaos-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1100;
+      display: none;
+    }
+
+    .chaos-overlay.active {
+      display: block;
+      animation: chaosFlash 0.15s infinite;
+    }
+
+    @keyframes chaosFlash {
+      0% { background: rgba(139, 69, 69, 0.2); }
+      33% { background: rgba(26, 21, 16, 0.3); }
+      66% { background: rgba(92, 64, 51, 0.2); }
+      100% { background: transparent; }
+    }
+
+    .corruption-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: var(--accent-red);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2500;
+      font-size: 28px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .corruption-screen.show {
+      display: flex;
+      animation: corruptionGlitch 0.3s infinite;
+    }
+
+    @keyframes corruptionGlitch {
+      0%, 100% { filter: hue-rotate(0deg); }
+      25% { filter: hue-rotate(20deg) brightness(1.2); }
+      50% { filter: hue-rotate(-20deg) brightness(0.8); }
+      75% { filter: hue-rotate(10deg); }
+    }
+
+    .ending-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: var(--text-primary);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2600;
+      font-size: 26px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .ending-screen.show {
+      display: flex;
+      animation: endingReveal 2s ease-in;
+    }
+
+    @keyframes endingReveal {
+      from { opacity: 0; filter: blur(10px); }
+      to { opacity: 1; filter: blur(0); }
+    }
+
+    .static-noise {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1050;
+      opacity: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.3"/></svg>');
+      animation: staticNoise 0.2s infinite;
+    }
+
+    .static-noise.active {
+      opacity: 0.15;
+    }
+
+    @keyframes staticNoise {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-5%, 5%); }
+      50% { transform: translate(5%, -5%); }
+      75% { transform: translate(-5%, -5%); }
+      100% { transform: translate(5%, 5%); }
+    }
+
+    .admin-panel {
+      position: fixed;
+      top: 60px;
+      right: 60px;
+      width: 420px;
+      height: 550px;
+      background: rgba(139, 69, 69, 0.95);
+      border: 4px solid #000;
+      color: #fff;
+      padding: 25px;
+      display: none;
+      z-index: 3000;
+      overflow: auto;
+      font-size: 15px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+    }
+
+    .admin-panel.show {
+      display: block;
+      animation: adminOpen 0.4s ease-out;
+    }
+
+    @keyframes adminOpen {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .admin-btn {
+      padding: 10px 15px;
+      background: #000;
+      border: 2px solid #fff;
+      color: #fff;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+      transition: all 0.2s;
+    }
+
+    .admin-btn:hover {
+      background: #333;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <!-- Boot Screen -->
+  <div class="boot-screen" id="bootScreen">
+    <div id="bootLines"></div>
+    <div class="cursor"></div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="desktop" id="desktop">
+    <!-- Hidden Pixels (triggers) -->
+    <div class="hidden-pixel" style="top: 80px; left: 150px;" onclick="triggerSecret(1)"></div>
+    <div class="hidden-pixel" style="top: 300px; right: 200px;" onclick="triggerSecret(2)"></div>
+    <div class="hidden-pixel" style="bottom: 350px; left: 400px;" onclick="triggerSecret(3)"></div>
+    <div class="hidden-pixel" style="top: 500px; right: 500px;" onclick="triggerSecret(4)"></div>
+    <div class="hidden-pixel" style="bottom: 200px; right: 300px;" onclick="triggerSecret(5)"></div>
+
+    <!-- Desktop Icons -->
+    <div class="icon" style="top: 25px; left: 25px;" ondblclick="openWindow('notepad')">
+      <div class="icon-img">📝</div>
+      <div class="icon-label">NOTEPAD</div>
+    </div>
+
+    <div class="icon" style="top: 25px; left: 140px;" ondblclick="openWindow('files')">
+      <div class="icon-img">📁</div>
+      <div class="icon-label">FILES</div>
+    </div>
+
+    <div class="icon" style="top: 140px; left: 25px;" ondblclick="openWindow('logs')">
+      <div class="icon-img">📊</div>
+      <div class="icon-label">LOGS</div>
+    </div>
+
+    <div class="icon" style="top: 140px; left: 140px;" ondblclick="openWindow('trash')">
+      <div class="icon-img">🗑️</div>
+      <div class="icon-label">TRASH</div>
+    </div>
+
+    <div class="icon" style="top: 255px; left: 25px;" ondblclick="openWindow('terminal')">
+      <div class="icon-img">⚙️</div>
+      <div class="icon-label">TERMINAL</div>
+    </div>
+
+    <div class="icon" style="top: 255px; left: 140px;" ondblclick="openWindow('games')">
+      <div class="icon-img">🎮</div>
+      <div class="icon-label">ARCADE</div>
+    </div>
+
+    <!-- Windows -->
+    <!-- Notepad -->
+    <div class="window" id="window-notepad" style="top: 100px; left: 280px; width: 650px; height: 450px;">
+      <div class="window-title" onmousedown="dragStart(event, 'window-notepad')">
+        NOTEPAD.EXE
+        <span class="window-close" onclick="closeWindow('notepad')">X</span>
+      </div>
+      <div class="window-content">
+        <textarea class="notepad-input" id="notepadInput" placeholder="..." oninput="checkNotepad()"></textarea>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="window" id="window-files" style="top: 140px; left: 320px; width: 550px; height: 450px;">
+      <div class="window-title" onmousedown="dragStart(event, 'window-files')">
+        FILES.SYSTEM
+        <span class="window-close" onclick="closeWindow('files')">X</span>
+      </div>
+      <div class="window-content" id="filesContent">
+        <div class="file-item" onclick="openFile(1)">MANIFEST.TXT</div>
+        <div class="file-item corrupted" onclick="openFile(2)">C̴͉̓O̴̲͝R̴̹̈R̴̰̾U̴̺̎P̴̻͝T̴̰̾.DAT</div>
+        <div class="file-item" onclick="openFile(3)">ARCHIVE_1997.LOG</div>
+        <div class="file-item" onclick="openFile(4)">ENCRYPTED.BIN</div>
+        <div class="file-item corrupted" onclick="openFile(5)">█̴█̴█̴_LOST.SYS</div>
+      </div>
+    </div>
+
+    <!-- Logs -->
+    <div class="window" id="window-logs" style="top: 130px; left: 430px; width: 600px; height: 500px;">
+      <div class="window-title" onmousedown="dragStart(event, 'window-logs')">
+        SYSTEM.LOGS
+        <span class="window-close" onclick="closeWindow('logs')">X</span>
+      </div>
+      <div class="window-content" id="logsContent"></div>
+    </div>
+
+    <!-- Trash -->
+    <div class="window" id="window-trash" style="top: 210px; left: 380px; width: 500px; height: 400px;">
+      <div class="window-title" onmousedown="dragStart(event, 'window-trash')">
+        RECYCLE.BIN
+        <span class="window-close" onclick="closeWindow('trash')">X</span>
+      </div>
+      <div class="window-content">
+        <div class="file-item" onclick="restoreTrash(1)">[RECOVER] fragment_001.tmp</div>
+        <div class="file-item" onclick="restoreTrash(2)">[RECOVER] memory_#@!.dat</div>
+        <div class="file-item corrupted" onclick="restoreTrash(3)">[RECOVER] ḏ̴̾e̴̫̾l̴̰̔e̴̹͝t̴̰̾e̴̺̎d̴̻͝.???</div>
+      </div>
+    </div>
+
+    <!-- Terminal -->
+    <div class="window" id="window-terminal" style="top: 190px; left: 520px; width: 600px; height: 420px;">
+      <div class="window-title" onmousedown="dragStart(event, 'window-terminal')">
+        SYSTEM.TERMINAL
+        <span class="window-close" onclick="closeWindow('terminal')">X</span>
+      </div>
+      <div class="window-content">
+        <div id="terminalOutput"></div>
+        <div style="display: flex; margin-top: 10px;">
+          <span style="margin-right: 10px;">></span>
+          <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleTerminal(event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Games -->
+    <div class="window" id="window-games" style="top: 270px; left: 480px; width: 550px; height: 450px;">
+      <div class="window-title" onmousedown="dragStart(event, 'window-games')">
+        ARCADE.SYSTEM
+        <span class="window-close" onclick="closeWindow('games')">X</span>
+      </div>
+      <div class="window-content">
+        <div class="game-container">
+          <button class="game-btn" id="game1" onclick="playGame(1)" disabled>[LOCKED] REACTION_TEST</button>
+          <button class="game-btn" id="game2" onclick="playGame(2)" disabled>[LOCKED] CODE_BREAKER</button>
+          <button class="game-btn" id="game3" onclick="playGame(3)" disabled>[LOCKED] PATTERN_MEMORY</button>
+          <div id="gameResult" style="margin-top: 25px; font-size: 20px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+      <div class="taskbar-title">SYSTEM.1997</div>
+      <div class="time" id="clock">00:00:00</div>
+    </div>
+  </div>
+
+  <!-- Overlays -->
+  <div class="flash-message" id="flashMsg"></div>
+  <div class="chaos-overlay" id="chaosOverlay"></div>
+  <div class="static-noise" id="staticNoise"></div>
+  
+  <!-- Corruption Screen -->
+  <div class="corruption-screen" id="corruptionScreen">
+    <h1 class="glitch-text">SYSTEM CORRUPTION DETECTED</h1>
+    <p style="margin-top: 30px;">MEMORY INTEGRITY: FAILED</p>
+    <p>DATA LOSS: IRREVERSIBLE</p>
+    <p style="margin-top: 40px; font-size: 20px;">[ RELOAD TO RECOVER ]</p>
+  </div>
+
+  <!-- Ending Screens -->
+  <div class="ending-screen" id="endingFalse"></div>
+  <div class="ending-screen" id="endingTrue"></div>
+
+  <!-- Admin Panel (Secret) -->
+  <div class="admin-panel" id="adminPanel">
+    <h2 style="margin-bottom: 20px;">🔴 DEVELOPER ACCESS 🔴</h2>
+    <div id="adminProgress"></div>
+    <div style="margin-top: 25px;">
+      <button class="admin-btn" onclick="devUnlockAll()">UNLOCK ALL</button>
+      <button class="admin-btn" onclick="devReset()">RESET GAME</button>
+      <button class="admin-btn" onclick="devReveal()">SHOW PASSWORD</button>
+      <button class="admin-btn" onclick="devTrueEnding()">TRIGGER TRUE ENDING</button>
+    </div>
+  </div>
+
+  <script>
+    // ===== GAME STATE =====
+    const state = {
+      stage: 0,
+      secrets: [false, false, false, false, false],
+      filesRead: [false, false, false, false, false],
+      trashRestored: [false, false, false],
+      gamesComplete: [false, false, false],
+      password: 'forgotten',
+      passwordEntered: false,
+      gamesUnlocked: false,
+      multiTabActive: false,
+      timeEventTriggered: false,
+      wrongAttempts: 0,
+      whisperCount: 0,
+      terminalCommands: [],
+      startTime: Date.now(),
+      tabId: Math.random().toString(36).substr(2, 9)
+    };
+
+    // ===== AUDIO SYSTEM =====
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type, data = {}) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      switch(type) {
+        case 'type':
+          osc.frequency.value = 600;
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.04);
+          break;
+        
+        case 'whisper':
+          // Low frequency rumble
+          osc.frequency.value = 100 + Math.random() * 50;
+          osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.03, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 2);
+          break;
+        
+        case 'glitch':
+          osc.frequency.value = 50 + Math.random() * 700;
+          osc.type = 'square';
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.15);
+          break;
+        
+        case 'unlock':
+          osc.frequency.value = 800;
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.5);
+          break;
+        
+        case 'error':
+          osc.frequency.value = 150;
+          osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.4);
+          break;
+        
+        case 'static':
+          // White noise effect
+          const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.5, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < buffer.length; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const noiseGain = ctx.createGain();
+          noise.connect(noiseGain);
+          noiseGain.connect(ctx.destination);
+          noiseGain.gain.setValueAtTime(0.08, ctx.currentTime);
+          noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+          noise.start(ctx.currentTime);
+          break;
+      }
+    }
+
+    // Play Morse code for "FEAR"
+    function playMorseFear() {
+      const pattern = [
+        {f: 700, d: 0.1}, {f: 0, d: 0.1}, {f: 700, d: 0.3}, {f: 0, d: 0.1}, // F: ..-. 
+        {f: 700, d: 0.1}, {f: 0, d: 0.3}, // E: .
+        {f: 700, d: 0.1}, {f: 700, d: 0.3}, {f: 0, d: 0.3}, // A: .-
+        {f: 700, d: 0.1}, {f: 700, d: 0.3}, {f: 700, d: 0.1}, {f: 0, d: 0.1} // R: .-.
+      ];
+
+      let time = ctx.currentTime;
+      pattern.forEach(note => {
+        if (note.f > 0) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.value = note.f;
+          gain.gain.setValueAtTime(0.1, time);
+          osc.start(time);
+          osc.stop(time + note.d);
+        }
+        time += note.d + 0.05;
+      });
+    }
+
+    // ===== BOOT SEQUENCE =====
+    const bootMsgs = [
+      'SYSTEM.BIOS v1.97',
+      'Initializing memory...',
+      'Memory check: 16MB OK',
+      'Loading drivers... OK',
+      'Mounting filesystem... OK',
+      'WARNING: Timestamp mismatch detected',
+      'ERROR: User profile corrupted',
+      'Loading backup configuration...',
+      'WARNING: Unknown process detected',
+      'System ready... or is it?',
+      ''
+    ];
+
+    let bootIdx = 0;
+    function bootSequence() {
+      const lines = document.getElementById('bootLines');
+      
+      if (bootIdx < bootMsgs.length) {
+        const line = document.createElement('div');
+        line.className = 'boot-line';
+        if (bootMsgs[bootIdx].includes('ERROR') || bootMsgs[bootIdx].includes('WARNING')) {
+          line.classList.add('error');
+        }
+        line.textContent = '> ' + bootMsgs[bootIdx];
+        line.style.animationDelay = (bootIdx * 0.5) + 's';
+        lines.appendChild(line);
+        
+        if (bootMsgs[bootIdx].length > 0) {
+          playSound('type');
+        }
+        
+        bootIdx++;
+        setTimeout(bootSequence, 700);
+      } else {
+        setTimeout(() => {
+          document.getElementById('bootScreen').style.display = 'none';
+          document.getElementById('desktop').classList.add('active');
+          startClock();
+          startLogs();
+          checkMultiTab();
+          randomWhispers();
+        }, 2000);
+      }
+    }
+
+    // ===== CLOCK =====
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        const time = now.toLocaleTimeString();
+        document.getElementById('clock').textContent = time;
+        
+        // Time-based trigger
+        const sec = now.getSeconds();
+        if (sec % 17 === 0 && state.stage >= 2 && !state.timeEventTriggered) {
+          triggerTimeEvent();
+        }
+      }, 1000);
+    }
+
+    // ===== WHISPERS =====
+    const whisperTexts = [
+      'remember...',
+      'you forgot something',
+      'it watches',
+      'not alone',
+      'the password',
+      'look closer',
+      'hidden in plain sight',
+      'forgotten...',
+      'ERROR',
+      'wake up'
+    ];
+
+    function randomWhispers() {
+      if (Math.random() < 0.3) {
+        const whisper = document.createElement('div');
+        whisper.className = 'whisper';
+        whisper.textContent = whisperTexts[Math.floor(Math.random() * whisperTexts.length)];
+        whisper.style.left = Math.random() * 80 + 10 + '%';
+        whisper.style.bottom = '0';
+        document.body.appendChild(whisper);
+        
+        playSound('whisper');
+        state.whisperCount++;
+        
+        setTimeout(() => whisper.remove(), 8000);
+      }
+      
+      setTimeout(randomWhispers, Math.random() * 15000 + 10000);
+    }
+
+    // ===== SYSTEM LOGS =====
+    const logMsgs = [
+      { text: '[SYS] Process 666 terminated abnormally', type: 'error' },
+      { text: '[WRN] Memory address 0x????: access violation', type: 'warning' },
+      { text: '[SYS] Backup recovered: forgotten_password.dat', type: '' },
+      { text: '[ERR] File integrity check: FAILED', type: 'error' },
+      { text: 'nettogrofnettogrofnettogrofnettogrof', type: 'reversed' },
+      { text: '[DBG] Cipher: Caesar +7 detected', type: '' },
+      { text: '[SYS] User last active: NEVER', type: 'warning' },
+      { text: '[WRN] Timestamp: 1997-??-??', type: 'warning' },
+      { text: '[DBG] Multi-instance sync: REQUIRED', type: '' },
+      { text: '[ERR] Notepad.exe: permission denied', type: 'error' },
+      { text: '[SYS] Morse sequence detected: ..-. . .- .-.', type: '' },
+      { text: '[WRN] Too many failed attempts', type: 'warning' },
+      { text: '[DBG] Hidden flag: TAB_SYNC_ACTIVE', type: '' }
+    ];
+
+    function startLogs() {
+      const content = document.getElementById('logsContent');
+      let idx = 0;
+      
+      setInterval(() => {
+        if (idx < logMsgs.length) {
+          const log = document.createElement('div');
+          log.className = 'log-line';
+          
+          const msg = logMsgs[idx];
+          log.classList.add(msg.type);
+          
+          // Random corruption
+          if (Math.random() < 0.25) {
+            log.classList.add('glitch-text');
+            log.textContent = msg.text.split('').map(c => 
+              Math.random() < 0.15 ? String.fromCharCode(33 + Math.random() * 94) : c
+            ).join('');
+          } else {
+            log.textContent = msg.text;
+          }
+          
+          content.appendChild(log);
+          content.scrollTop = content.scrollHeight;
+          
+          idx = (idx + 1) % logMsgs.length;
+        }
+      }, 4000);
+    }
+
+    // ===== WINDOW MANAGEMENT =====
+    function openWindow(name) {
+      const win = document.getElementById('window-' + name);
+      win.classList.add('active');
+      playSound('type');
+      
+      if (name === 'files') state.filesRead[0] = true;
+      if (name === 'logs') state.filesRead[1] = true;
+      
+      checkProgress();
+    }
+
+    function closeWindow(name) {
+      const win = document.getElementById('window-' + name);
+      win.classList.remove('active');
+      playSound('type');
+      
+      // Penalty for closing notepad early
+      if (name === 'notepad' && state.stage < 2 && Math.random() < 0.5) {
+        triggerChaos();
+        flashMessage('WARNING: Data may be lost', 1500);
+      }
+    }
+
+    // Dragging
+    let dragged = null, offsetX = 0, offsetY = 0;
+
+    function dragStart(e, id) {
+      dragged = document.getElementById(id);
+      const rect = dragged.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+    }
+
+    function drag(e) {
+      if (dragged) {
+        dragged.style.left = (e.clientX - offsetX) + 'px';
+        dragged.style.top = (e.clientY - offsetY) + 'px';
+      }
+    }
+
+    function dragEnd() {
+      dragged = null;
+      document.removeEventListener('mousemove', drag);
+      document.removeEventListener('mouseup', dragEnd);
+    }
+
+    // ===== SECRETS & HINTS =====
+    const secretMsgs = [
+      'Secret 1: The word you seek is old and lost...',
+      'Secret 2: Look in the trash for fragments of truth',
+      'Secret 3: Files hold pieces of the puzzle',
+      'Secret 4: Terminal knows more than it shows',
+      'Secret 5: The password is a state of mind'
+    ];
+
+    function triggerSecret(num) {
+      if (!state.secrets[num - 1]) {
+        state.secrets[num - 1] = true;
+        flashMessage(secretMsgs[num - 1], 2000);
+        playSound('unlock');
+        
+        if (num === 5) playMorseFear();
+        
+        checkProgress();
+      }
+    }
+
+    function flashMessage(text, duration = 2000) {
+      const flash = document.getElementById('flashMsg');
+      flash.textContent = text;
+      flash.classList.add('show');
+      
+      if (Math.random() < 0.3) playSound('glitch');
+      
+      setTimeout(() => flash.classList.remove('show'), duration);
+    }
+
+    // ===== FILES =====
+    const fileContents = [
+      `MANIFEST.TXT
+---
+System initialized 1997
+Last user: UNKNOWN
+Password status: FORGOTTEN
+
+The answer lies in what was lost.
+Seek the forgotten word.
+
+Cipher hint: Shift by 7
+"mylnvaalu" → ?`,
+      
+      `C̴O̴R̴R̴U̴P̴T̴.DAT
+---
+#@!$%^&*()
+forgotten
+F̴O̴R̴G̴O̴T̴T̴E̴N̴
+01100110 01101111 01110010 01100111 01101111 01110100 01110100 01100101 01101110
+
+[DATA UNREADABLE]`,
+      
+      `ARCHIVE_1997.LOG
+---
+Password length: 9 chars
+Type: lowercase
+First letter: f
+Last letters: ten
+
+Backup file: forgotten.bak
+Status: DELETED`,
+      
+      `ENCRYPTED.BIN
+---
+ROT7: mylnvaalu
+Binary: 01100110...
+Reversed: nettogrf
+
+Hint: This word describes
+what happened to the password itself.`,
+      
+      `█̴█̴█̴_LOST.SYS
+---
+F***O***E*
+*O*G*T*E*
+**R**T***
+
+Full word: FORGOTTEN
+
+[FILE RECOVERED]`
+    ];
+
+    function openFile(num) {
+      flashMessage(fileContents[num - 1], 6000);
+      playSound('type');
+      
+      if (!state.filesRead[num - 1]) {
+        state.filesRead[num - 1] = true;
+        checkProgress();
+      }
+      
+      if (Math.random() < 0.4) {
+        setTimeout(() => {
+          triggerChaos();
+          playSound('static');
+        }, 3000);
+      }
+    }
+
+    // ===== TRASH =====
+    const trashContents = [
+      'Fragment 001: "...org...ten..."',
+      'Memory fragment: Password was never remembered',
+      'Deleted note: The word is FORGOTTEN'
+    ];
+
+    function restoreTrash(num) {
+      flashMessage(trashContents[num - 1], 3000);
+      playSound('unlock');
+      
+      if (!state.trashRestored[num - 1]) {
+        state.trashRestored[num - 1] = true;
+        checkProgress();
+      }
+    }
+
+    // ===== NOTEPAD (MAIN PUZZLE) =====
+    function checkNotepad() {
+      const input = document.getElementById('notepadInput').value;
+      playSound('type');
+      
+      // Stage progression
+      if (state.stage === 0 && input.toLowerCase().includes('help')) {
+        state.stage = 1;
+        flashMessage('Find the forgotten word...', 2000);
+        playSound('whisper');
+        return;
+      }
+      
+      // Password check
+      if (input.trim().toLowerCase() === state.password) {
+        state.passwordEntered = true;
+        state.stage = 3;
+        flashMessage('🔓 ACCESS GRANTED - SYSTEMS UNLOCKING', 3000);
+        playSound('unlock');
+        unlockGames();
+        playMorseFear();
+        return;
+      }
+      
+      // Wrong password penalty
+      if (input.length === state.password.length && input.trim().toLowerCase() !== state.password) {
+        state.wrongAttempts++;
+        playSound('error');
+        
+        if (state.wrongAttempts >= 4) {
+          triggerChaos();
+        }
+        
+        if (state.wrongAttempts >= 8) {
+          showCorruption();
+        }
+      }
+    }
+
+    // ===== TERMINAL =====
+    const terminalResponses = {
+      'help': 'Commands: help, status, hint, decode, clear',
+      'status': `Stage: ${state.stage}\nSecrets: ${state.secrets.filter(s => s).length}/5\nFiles: ${state.filesRead.filter(f => f).length}/5`,
+      'hint': 'The password describes itself. What was lost?',
+      'decode mylnvaalu': 'ROT7 decoded: forgotten',
+      'clear': '[CLEARED]'
+    };
+
+    function handleTerminal(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('terminalInput');
+        const output = document.getElementById('terminalOutput');
+        const cmd = input.value.trim().toLowerCase();
+        
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        line.textContent = '> ' + input.value;
+        output.appendChild(line);
+        
+        const response = document.createElement('div');
+        response.className = 'terminal-line';
+        
+        if (cmd === 'clear') {
+          output.innerHTML = '';
+        } else if (terminalResponses[cmd]) {
+          response.textContent = terminalResponses[cmd];
+          output.appendChild(response);
+        } else {
+          response.textContent = 'Unknown command';
+          output.appendChild(response);
+        }
+        
+        input.value = '';
+        output.scrollTop = output.scrollHeight;
+        playSound('type');
+        
+        state.terminalCommands.push(cmd);
+        checkProgress();
+      }
+    }
+
+    // ===== GAMES =====
+    function unlockGames() {
+      document.getElementById('game1').disabled = false;
+      document.getElementById('game2').disabled = false;
+      document.getElementById('game3').disabled = false;
+      document.getElementById('game1').textContent = 'REACTION_TEST';
+      document.getElementById('game2').textContent = 'CODE_BREAKER';
+      document.getElementById('game3').textContent = 'PATTERN_MEMORY';
+      state.gamesUnlocked = true;
+    }
+
+    function playGame(num) {
+      const result = document.getElementById('gameResult');
+      
+      switch(num) {
+        case 1: // Reaction test
+          result.textContent = 'Click when text turns red...';
+          setTimeout(() => {
+            result.style.color = 'var(--accent-red)';
+            const start = Date.now();
+            result.textContent = 'CLICK NOW!';
+            result.onclick = () => {
+              const time = Date.now() - start;
+              result.textContent = `Time: ${time}ms`;
+              result.style.color = 'var(--text-primary)';
+              if (!state.gamesComplete[0]) {
+                state.gamesComplete[0] = true;
+                flashMessage('Game 1 complete! Clue: F E A R', 2000);
+                checkProgress();
+              }
+              result.onclick = null;
+            };
+          }, Math.random() * 4000 + 2000);
+          break;
+          
+        case 2: // Code breaker
+          const code = Math.floor(Math.random() * 1000);
+          const guess = prompt('Enter 3-digit code (000-999):');
+          if (parseInt(guess) === code) {
+            result.textContent = 'Code cracked!';
+            if (!state.gamesComplete[1]) {
+              state.gamesComplete[1] = true;
+              flashMessage('Game 2 complete! Timestamp matters.', 2000);
+              checkProgress();
+            }
+          } else {
+            result.textContent = `Wrong. Code was ${code}`;
+          }
+          break;
+          
+        case 3: // Pattern memory
+          const pattern = [];
+          for (let i = 0; i < 6; i++) {
+            pattern.push(Math.floor(Math.random() * 9) + 1);
+          }
+          alert('Memorize: ' + pattern.join(' '));
+          setTimeout(() => {
+            const answer = prompt('Enter pattern (no spaces):');
+            if (answer === pattern.join('')) {
+              result.textContent = 'Pattern matched!';
+              if (!state.gamesComplete[2]) {
+                state.gamesComplete[2] = true;
+                flashMessage('Game 3 complete! All layers required.', 2000);
+                checkProgress();
+              }
+            } else {
+              result.textContent = 'Pattern incorrect';
+            }
+          }, 5000);
+          break;
+      }
+    }
+
+    // ===== MULTI-TAB =====
+    function checkMultiTab() {
+      localStorage.setItem('horror_tab_' + state.tabId, Date.now());
+      
+      const tabs = Object.keys(localStorage).filter(k => k.startsWith('horror_tab_'));
+      
+      if (tabs.length >= 2 && state.stage >= 2 && !state.multiTabActive) {
+        state.multiTabActive = true;
+        flashMessage('MULTI-TAB SYNC: The forgotten word...', 2000);
+        playSound('unlock');
+      }
+      
+      // Clean old tabs
+      const now = Date.now();
+      tabs.forEach(key => {
+        const time = parseInt(localStorage.getItem(key));
+        if (now - time > 300000) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      setTimeout(checkMultiTab, 2000);
+    }
+
+    // ===== TIME EVENT =====
+    function triggerTimeEvent() {
+      state.timeEventTriggered = true;
+      flashMessage('⏰ TEMPORAL ANOMALY: Check terminal', 2000);
+      
+      const output = document.getElementById('terminalOutput');
+      const line = document.createElement('div');
+      line.className = 'terminal-line error';
+      line.textContent = '[TIME SYNC] Password hint: FORGOT***';
+      output.appendChild(line);
+      
+      playSound('glitch');
+    }
+
+    // ===== CHAOS MODE =====
+    function triggerChaos() {
+      const chaos = document.getElementById('chaosOverlay');
+      const static = document.getElementById('staticNoise');
+      
+      chaos.classList.add('active');
+      static.classList.add('active');
+      
+      playSound('glitch');
+      playSound('static');
+      
+      // Random glitch messages
+      const msgs = [
+        'MEMORY CORRUPTION',
+        'ERROR: SYSTEM UNSTABLE',
+        'WARNING: DATA LOSS',
+        'TIMESTAMP INVALID',
+        'USER NOT FOUND'
+      ];
+      flashMessage(msgs[Math.floor(Math.random() * msgs.length)], 800);
+      
+      // Glitch some elements
+      document.querySelectorAll('.log-line, .file-item').forEach(el => {
+        if (Math.random() < 0.3) {
+          el.classList.add('glitch-text');
+          setTimeout(() => el.classList.remove('glitch-text'), 1000);
+        }
+      });
+      
+      setTimeout(() => {
+        chaos.classList.remove('active');
+        static.classList.remove('active');
+      }, 2000);
+    }
+
+    function showCorruption() {
+      document.getElementById('corruptionScreen').classList.add('show');
+      playSound('error');
+      playSound('static');
+    }
+
+    // ===== PROGRESS CHECKING =====
+    function checkProgress() {
+      const totalSecrets = state.secrets.filter(s => s).length +
+                          state.filesRead.filter(f => f).length +
+                          state.trashRestored.filter(t => t).length;
+      
+      if (totalSecrets >= 8 && state.stage === 1) {
+        state.stage = 2;
+        flashMessage('Stage 2: You are close...', 2000);
+      }
+      
+      // False ending
+      if (state.gamesUnlocked && 
+          state.gamesComplete.filter(g => g).length === 3 &&
+          !state.multiTabActive) {
+        setTimeout(() => showEnding('false'), 2000);
+      }
+      
+      // True ending
+      if (state.passwordEntered &&
+          state.gamesComplete.filter(g => g).length === 3 &&
+          state.multiTabActive &&
+          state.timeEventTriggered &&
+          totalSecrets >= 10) {
+        setTimeout(() => showEnding('true'), 3000);
+      }
+    }
+
+    // ===== ENDINGS =====
+    function showEnding(type) {
+      let screen, content;
+      
+      if (type === 'false') {
+        screen = document.getElementById('endingFalse');
+        content = `
+          <h1>SYSTEM STABLE</h1>
+          <p style="margin-top: 30px;">All games completed</p>
+          <p>Access level: STANDARD</p>
+          <p style="margin-top: 40px; font-size: 20px;">
+            But something feels... incomplete.
+          </p>
+          <p style="margin-top: 20px; opacity: 0.7; font-size: 16px;">
+            Did you find everything?<br>
+            Or did you forget something?
+          </p>
+        `;
+      } else {
+        screen = document.getElementById('endingTrue');
+        content = `
+          <h1 style="color: var(--accent-red);">TRUE ENDING UNLOCKED</h1>
+          <p style="margin-top: 30px;">You remembered what was FORGOTTEN</p>
+          <p style="margin-top: 20px;">
+            ✓ Password discovered<br>
+            ✓ All secrets found<br>
+            ✓ Games completed<br>
+            ✓ Multi-tab sync<br>
+            ✓ Time anomaly solved
+          </p>
+          <p style="margin-top: 40px; font-size: 22px; color: var(--text-primary);">
+            The system remembers now.<br>
+            You have broken the cycle.
+          </p>
+          <p style="margin-top: 30px; font-size: 16px;">
+            Time elapsed: ${Math.floor((Date.now() - state.startTime) / 1000)}s<br>
+            Completion: 100%
+          </p>
+          <p style="margin-top: 40px; font-size: 14px; opacity: 0.7;">
+            🎭 HORROR PUZZLE MASTER 🎭<br>
+            Created by: [YOUR NAME]<br>
+            Password: forgotten<br>
+            "What is lost can be found."
+          </p>
+        `;
+        
+        playSound('unlock');
+        playMorseFear();
+      }
+      
+      screen.innerHTML = content;
+      screen.classList.add('show');
+    }
+
+    // ===== ADMIN PANEL (Ctrl+Alt+Shift+D) =====
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.altKey && e.shiftKey && e.key === 'D') {
+        const panel = document.getElementById('adminPanel');
+        panel.classList.toggle('show');
+        updateAdminPanel();
+        playSound('unlock');
+      }
+    });
+
+    function updateAdminPanel() {
+      const progress = document.getElementById('adminProgress');
+      progress.innerHTML = `
+        <p><strong>Progress:</strong></p>
+        <p>Stage: ${state.stage}</p>
+        <p>Secrets: ${state.secrets.filter(s => s).length}/5</p>
+        <p>Files: ${state.filesRead.filter(f => f).length}/5</p>
+        <p>Trash: ${state.trashRestored.filter(t => t).length}/3</p>
+        <p>Games: ${state.gamesComplete.filter(g => g).length}/3</p>
+        <p>Password: ${state.passwordEntered ? 'YES' : 'NO'}</p>
+        <p>Multi-tab: ${state.multiTabActive ? 'YES' : 'NO'}</p>
+        <p>Time event: ${state.timeEventTriggered ? 'YES' : 'NO'}</p>
+        <p>Wrong attempts: ${state.wrongAttempts}</p>
+        <p>Whispers: ${state.whisperCount}</p>
+      `;
+    }
+
+    function devUnlockAll() {
+      state.secrets = [true, true, true, true, true];
+      state.filesRead = [true, true, true, true, true];
+      state.trashRestored = [true, true, true];
+      state.passwordEntered = true;
+      state.gamesComplete = [true, true, true];
+      state.multiTabActive = true;
+      state.timeEventTriggered = true;
+      state.stage = 5;
+      unlockGames();
+      flashMessage('ALL UNLOCKED (DEV MODE)', 2000);
+      updateAdminPanel();
+    }
+
+    function devReset() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    function devReveal() {
+      alert('PASSWORD: ' + state.password + '\n\nEnter in Notepad to unlock everything.');
+    }
+
+    function devTrueEnding() {
+      showEnding('true');
+    }
+
+    // ===== START =====
+    window.onload = () => {
+      bootSequence();
+    };
+
+    window.onbeforeunload = () => {
+      localStorage.removeItem('horror_tab_' + state.tabId);
+    };
+  </script>
+</body>
+</html>

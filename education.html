@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Education</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  :root {
+    --bg-color: #f7f1e1;        
+    --text-color: #5a5a3d;      
+    --highlight-color: #8b6b4a;
+    --block-bg: #e9e6d2;        
+    --border-color: #a7a36f;    
+    --shadow-color: #c7c3a0;
+    --accent-yellow: #e4b222;
+  }
+
+  body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--bg-color);
+    padding: 20px;
+    color: var(--text-color);
+    background-image: url("ghibli_sky.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 28px;
+    text-shadow: 2px 2px 0 var(--border-color);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  h1:hover {
+    color: var(--highlight-color);
+    text-shadow: 4px 4px 0 var(--accent-yellow);
+    transform: scale(1.05);
+  }
+
+  .main-container {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    gap: 20px;
+  }
+
+  .photo-column {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .photo-box {
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 12px;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    backdrop-filter: blur(5px);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .photo-box:hover {
+    transform: translateX(10px) scale(1.05);
+  }
+
+  .photo-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 3px solid var(--border-color);
+    display: block;
+  }
+
+  .content-box {
+    flex: 1;
+    background-color: rgba(233, 230, 210, 0.9);
+    border: 5px solid var(--border-color);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 8px 8px 0 var(--border-color);
+    backdrop-filter: blur(5px);
+  }
+
+  h2 {
+    font-size: 14px;
+    color: var(--highlight-color);
+    text-decoration: underline;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    transition: all 0.3s steps(4);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  h2:first-of-type {
+    margin-top: 0;
+  }
+
+  h2:hover {
+    color: var(--accent-yellow);
+    transform: translateX(10px) scale(1.1);
+  }
+
+  h2:hover::before {
+    content: '▶ ';
+    color: var(--accent-yellow);
+    font-size: 12px;
+  }
+
+  p {
+    font-size: 10px;
+    line-height: 18px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  p:hover {
+    background: rgba(167, 163, 111, 0.1);
+    color: #000;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    gap: 10px;
+  }
+
+  .button-row a {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: var(--highlight-color);
+    border: 3px solid var(--highlight-color);
+    text-decoration: none;
+    padding: 12px 18px;
+    background-color: var(--block-bg);
+    border-radius: 10px;
+    transition: 0.3s steps(4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 0 var(--highlight-color);
+  }
+
+  .button-row a:hover {
+    background-color: var(--highlight-color);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 #5a4a35;
+  }
+
+  .button-row a:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 var(--highlight-color);
+  }
+
+  .arrow-left, .arrow-right {
+    visibility: hidden;
+  }
+
+  .button-row a:hover .arrow-left, .button-row a:hover .arrow-right {
+    visibility: visible;
+    animation: blink 0.5s infinite;
+  }
+
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      flex-direction: column;
+    }
+
+    .photo-column {
+      flex: none;
+      width: 100%;
+    }
+
+    .photo-box {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .button-row {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>EDUCATION</h1>
+
+<div class="main-container">
+  
+  <div class="photo-column">
+    <div class="photo-box">
+      <img src="education/ee7.jpg" alt="Grade 8 Picture" />
+    </div>
+    <div class="photo-box">
+      <img src="education/ee6.jpg" alt="Grade 9 Picture" />
+    </div>
+    <div class="photo-box">
+      <img src="education/ee14.jpg" alt="Grade 10 Picture" />
+    </div>
+    <div class="photo-box">
+      <img src="education/ee2.jpg" alt="Extra Picture" />
+    </div>
+  </div>
+
+  <div class="content-box">
+    
+    <h2>Grade 8</h2>
+    <p>
+      Noong Grade 8 ako, sobrang kinakabahan ako sa first day kasi bagong environment. Pero kahit tahimik ako noon, may mga lumapit sa akin at tinanong kung anong section ko.
+      Dito nagsimula ang mga bagong kaibigan ko, at kahit hindi pa ako masyadong nakikipag-usap, ramdam ko ang warmth ng mga tao sa paligid. Ang bawat araw ay may bagong karanasan,
+      at unti-unti akong nag-adjust sa buhay estudyante. Naging mahirap din ang mga exams, pero kasama ang mga classmates, mas naging bearable ang lahat.
+    </p>
+
+    <h2>Grade 9</h2>
+    <p>
+      Nang Grade 9 naman, mas naging outgoing na ako kaysa noong Grade 8. Sumali ako sa ilang school activities at mas nakilala ko ang classmates ko. Hindi na ako 'yung tahimik na estudyante sa likod,
+      aktibo na ako sa group works at discussions. Naging close ko rin ang ilang teachers, at mas nag-enjoy ako sa pag-aaral. May mga challenges pa rin, pero mas confident na akong harapin ang mga 'yon.
+      Dito ko rin natutunan na balance is important—between studies, friends, at hobbies. Ang Grade 9 ang naging turning point ko para maging mas social at confident.
+    </p>
+
+    <h2>Grade 10</h2>
+    <p>
+      Pagdating ng Grade 10, mas naging matured na kami sa friendship. Kahit may stress at problema, nandyan pa rin kami para sa isa't isa. Naramdaman ko ang true meaning ng friendship sa taong ito.
+      Hindi lang basta kasama sa lunch o sa laro, kundi 'yung mga taong nandyan kahit mahirap ang sitwasyon. Naging emotional din ang last year ng junior high, kasi alam naming hihiwalay na kami eventually.
+      Pero mas lalo kaming nag-bonding, nag-create ng memories na hindi ko makakalimutan. Ang Grade 10 ay naging bittersweet—saya dahil sa achievements, lungkot dahil sa pagtatapos ng isang chapter.
+    </p>
+
+    <div class="button-row">
+      <a href="education_album.html">
+        <span class="arrow-left">▶</span> Education Album <span class="arrow-right">◀</span>
+      </a>
+      <a href="menu.html">
+        <span class="arrow-left">▶</span> Back to Menu <span class="arrow-right">◀</span>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

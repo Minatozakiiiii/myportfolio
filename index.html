@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portal</title>
+  <style>
+    :root {
+      --bg-color: #f8f5e1;
+      --primary-color: #556b2f;
+      --accent-red: #8b2d2d;
+      --accent-orange: #cc5500;
+      --accent-yellow: #e4b222;
+      --text-color: #333333;
+      --dark-bg: #0d0d0d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      transition: background-color 0.8s ease-in-out;
+      background-color: var(--dark-bg);
+    }
+
+    body.lamp-on {
+      background-color: var(--bg-color);
+      background-image: linear-gradient(rgba(248, 245, 225, 0.9), rgba(248, 245, 225, 0.9)), url("ghibli.jpg");
+      background-size: cover;
+    }
+
+    .lamp-container {
+      position: absolute;
+      top: 0;
+      right: 15%;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pixel-lamp {
+      width: 70px;
+      height: 55px;
+      background: #222;
+      clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+      transition: all 0.6s ease-in-out;
+      image-rendering: pixelated;
+      border-bottom: 4px solid #111;
+    }
+
+    body.lamp-on .pixel-lamp {
+      background: var(--accent-yellow);
+      box-shadow: 0 0 100px 25px rgba(228, 178, 34, 0.6);
+      border-bottom: 4px solid var(--accent-orange);
+      animation: smoothFlicker 0.2s ease-in-out 1;
+    }
+
+    @keyframes smoothFlicker {
+      0% {
+        opacity: 0.7;
+        box-shadow: 0 0 80px 20px rgba(228, 178, 34, 0.5);
+      }
+      50% {
+        opacity: 0.85;
+        box-shadow: 0 0 90px 22px rgba(228, 178, 34, 0.55);
+      }
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 100px 25px rgba(228, 178, 34, 0.6);
+      }
+    }
+
+    .chain-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .chain-wrapper:hover {
+      transform: scale(1.05);
+    }
+
+    .chain {
+      width: 4px;
+      height: 100px;
+      background: repeating-linear-gradient(to bottom, #555, #555 5px, #333 5px, #333 10px);
+      transition: height 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      position: relative;
+    }
+
+    .chain.pulling {
+      height: 140px;
+    }
+
+    .handle {
+      width: 16px;
+      height: 20px;
+      background: var(--accent-red);
+      border: 3px solid #000;
+      margin-top: -2px;
+      image-rendering: pixelated;
+      transition: background 0.3s ease;
+    }
+
+    .chain-wrapper:hover .handle {
+      background: #a33636;
+    }
+
+    #entry-card {
+      background-color: rgba(241, 231, 198, 0.95);
+      border: 4px solid #a0a067;
+      padding: 35px;
+      width: 340px;
+      text-align: center;
+      z-index: 10;
+      display: none;
+      box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.3);
+      image-rendering: pixelated;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.6s ease-out;
+    }
+
+    body.lamp-on #entry-card {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      margin-bottom: 25px;
+      color: var(--primary-color);
+      line-height: 1.5;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 3px solid #a0a067;
+      background: #f1e7c6;
+      font-family: 'Courier New';
+      font-weight: bold;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s ease, transform 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent-orange);
+      transform: scale(1.01);
+    }
+
+    button {
+      cursor: pointer;
+      padding: 15px;
+      width: 100%;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 11px;
+      background: #f1e7c6;
+      border: 4px solid #a0a067;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      box-shadow: 0 4px #a0a067;
+    }
+
+    button:hover {
+      transform: translateY(-4px);
+      background-color: #e6d9b0;
+      box-shadow: 0 8px #a0a067;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px #a0a067;
+    }
+
+    .msg {
+      font-size: 10px;
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 15px;
+      transition: opacity 0.3s ease;
+    }
+
+    .error {
+      color: var(--accent-red);
+    }
+
+    .success {
+      color: var(--primary-color);
+    }
+
+    .hint {
+      margin-top: 20px;
+      font-size: 9px;
+      opacity: 0.6;
+      color: #666;
+      font-family: 'Courier New';
+    }
+
+    .pixel {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      pointer-events: none;
+      z-index: 1;
+      animation: float 8s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+</head>
+
+<body class="lamp-off">
+
+  <div class="lamp-container">
+    <div class="pixel-lamp"></div>
+    <div class="chain-wrapper" id="chain-trigger">
+      <div class="chain" id="chain-visual"></div>
+      <div class="handle"></div>
+    </div>
+  </div>
+
+  <div id="entry-card">
+    <div id="signup-view">
+      <h2>Sign Up Here</h2>
+      <form id="signup-form">
+        <input type="text" id="reg-user" placeholder="USERNAME" required>
+        <br><br>
+        <input type="email" id="reg-email" placeholder="EMAIL" required>
+        <br><br>
+        <input type="password" id="reg-pass" placeholder="PASSWORD" required>
+        <button type="submit">Create an Account</button>
+      </form>
+      <div id="reg-status" class="msg"></div>
+      <p class="hint">"Psst... click the lamp 3x fast to login"</p>
+    </div>
+
+    <div id="login-view" style="display: none;">
+      <h2 style="color: var(--accent-red);">Certified Skibidi😂🤣🫵</h2>
+      <form id="login-form">
+        <input type="text" id="log-user" placeholder="USERNAME" required>
+        <br><br>
+        <input type="password" id="log-pass" placeholder="PASSWORD" required>
+        <button type="submit" style="border-color: var(--accent-red); color: var(--accent-red);">LOG IN</button>
+      </form>
+      <div id="log-status" class="msg error"></div>
+      <p class="hint">"Triple click to return to signup"</p>
+    </div>
+  </div>
+
+  <script>
+    const chainTrigger = document.getElementById('chain-trigger');
+    const chainVisual = document.getElementById('chain-visual');
+    const body = document.body;
+    const signupView = document.getElementById('signup-view');
+    const loginView = document.getElementById('login-view');
+
+    // Admin credentials
+    const ADMIN_USERNAME = 'admin';
+    const ADMIN_PASSWORD = 'skibidi2025';
+
+    let clickCount = 0;
+    let lastClickTime = 0;
+
+    localStorage.setItem('lampStatus', 'off');
+
+    chainTrigger.addEventListener('mousedown', () => chainVisual.classList.add('pulling'));
+    window.addEventListener('mouseup', () => chainVisual.classList.remove('pulling'));
+
+    chainTrigger.addEventListener('click', () => {
+      const currentTime = new Date().getTime();
+
+      if (currentTime - lastClickTime < 500) {
+        clickCount++;
+      } else {
+        clickCount = 1;
+      }
+      lastClickTime = currentTime;
+
+      if (clickCount === 3) {
+        const isLogin = loginView.style.display === 'block';
+        loginView.style.display = isLogin ? 'none' : 'block';
+        signupView.style.display = isLogin ? 'block' : 'none';
+        clickCount = 0;
+      } else {
+        setTimeout(() => {
+          if (clickCount < 3) {
+            body.classList.toggle('lamp-on');
+            body.classList.toggle('lamp-off');
+          }
+        }, 200);
+      }
+    });
+
+    document.getElementById('signup-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('reg-user').value;
+      const email = document.getElementById('reg-email').value;
+      const pass = document.getElementById('reg-pass').value;
+      const status = document.getElementById('reg-status');
+
+      // Prevent admin username from being used
+      if (user.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+        status.className = "msg error";
+        status.innerText = "THIS USERNAME IS RESERVED!";
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+
+      if (users.find(u => u.username === user)) {
+        status.className = "msg error";
+        status.innerText = "NAME ALREADY TAKEN!";
+        return;
+      }
+
+      users.push({ username: user, email: email, password: pass });
+      localStorage.setItem('users', JSON.stringify(users));
+
+      status.className = "msg success";
+      status.innerText = "ACCOUNT CREATED! NOW TRIPLE-CLICK LAMP.";
+      document.getElementById('signup-form').reset();
+    });
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('log-user').value;
+      const pass = document.getElementById('log-pass').value;
+      const status = document.getElementById('log-status');
+
+      // Check if admin login
+      if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+        alert("🔐 ADMIN ACCESS GRANTED! REDIRECTING TO SECRET PANEL...");
+        window.location.href = 'secret.html';
+        return;
+      }
+
+      // Check regular user login
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      const validUser = users.find(u => u.username === user && u.password === pass);
+
+      if (validUser) {
+        alert("✅ ACCESS GRANTED! REDIRECTING...");
+        window.location.href = 'menu.html';
+      } else {
+        status.innerText = "INVALID CREDENTIALS!";
+        setTimeout(() => { status.innerText = ""; }, 2000);
+      }
+    });
+
+    function createPixels() {
+      for (let i = 0; i < 60; i++) {
+        const p = document.createElement('div');
+        p.className = 'pixel';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = Math.random() * 100 + 'vh';
+        p.style.backgroundColor = ['#556b2f', '#8b2d2d', '#cc5500', '#e4b222'][Math.floor(Math.random() * 4)];
+        p.style.opacity = Math.random();
+        p.style.animationDelay = Math.random() * 8 + 's';
+        document.body.appendChild(p);
+      }
+    }
+    createPixels();
+  </script>
+</body>
+
+</html>
